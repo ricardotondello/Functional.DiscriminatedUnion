@@ -1,0 +1,15 @@
+name: SonarCloud
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+
+jobs:
+  sonar-cloud:
+    uses: ricardotondello/shared-workflows/.github/workflows/sonarcloud.yml@main
+    secrets:
+      inherit

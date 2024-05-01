@@ -1,0 +1,12 @@
+name: Deploy to NuGet
+
+on:
+  push:
+    tags:
+    - 'v*'
+
+jobs:
+  nuget:
+    uses: ricardotondello/shared-workflows/.github/workflows/nuget.yml@main
+    secrets:
+        inherit
