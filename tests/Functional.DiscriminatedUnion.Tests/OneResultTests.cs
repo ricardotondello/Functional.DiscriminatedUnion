@@ -227,4 +227,92 @@ public class OneResultTests
             return 55.6d;
         }
     }
+
+    [Fact]
+    public void TryGetT1_ShouldReturnTrueWhenIsT1()
+    {
+        var oneResultT1 = (OneResult<int>)6;
+
+        var result = oneResultT1.TryGetT1(out var t1);
+
+        result.Should().BeTrue();
+        t1.Should().Be(6);
+    }
+    
+    [Fact]
+    public void TryGetT1_ShouldReturnFalseWhenIsNotT1()
+    {
+        var oneResultT1 =(OneResult<int, string>)"test";
+
+        var result = oneResultT1.TryGetT1(out var t1);
+
+        result.Should().BeFalse();
+        t1.Should().Be(default);
+    }
+    
+    [Fact]
+    public void TryGetT2_ShouldReturnTrueWhenIsT2()
+    {
+        var oneResultT2 = (OneResult<int, string>)"test";
+
+        var result = oneResultT2.TryGetT2(out var t2);
+
+        result.Should().BeTrue();
+        t2.Should().Be("test");
+    }
+    
+    [Fact]
+    public void TryGetT2_ShouldReturnFalseWhenIsNotT2()
+    {
+        var oneResultT2 =(OneResult<int, string>)1;
+
+        var result = oneResultT2.TryGetT2(out var t2);
+
+        result.Should().BeFalse();
+        t2.Should().Be(default);
+    }
+    
+    [Fact]
+    public void TryGetT3_ShouldReturnTrueWhenIsT3()
+    {
+        var oneResult = (OneResult<int, string, bool>)true;
+
+        var result = oneResult.TryGetT3(out var t3);
+
+        result.Should().BeTrue();
+        t3.Should().BeTrue();
+    }
+    
+    [Fact]
+    public void TryGetT3_ShouldReturnFalseWhenIsNotT3()
+    {
+        var oneResult =(OneResult<int, string, bool>)1;
+
+        var result = oneResult.TryGetT3(out var t3);
+
+        result.Should().BeFalse();
+        t3.Should().Be(default); 
+    }
+    
+    [Fact]
+    public void TryGetT4_ShouldReturnTrueWhenIsT4()
+    {
+        var oneResult = (OneResult<int, string, bool, double>)7.5d;
+
+        var result = oneResult.TryGetT4(out var t4);
+
+        result.Should().BeTrue();
+        t4.Should().Be(7.5d);
+    }
+    
+    [Fact]
+    public void TryGetT4_ShouldReturnFalseWhenIsNotT4()
+    {
+        var oneResult =(OneResult<int, string, bool, double>)"test";
+
+        var result = oneResult.TryGetT4(out var t4);
+
+        result.Should().BeFalse();
+        t4.Should().Be(default);
+    }
 }
