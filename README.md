@@ -49,7 +49,7 @@ public OneResult<UserCreated, UserUpdated> CreateOrUpdateUser()
 }
 
 var result = CreateOrUpdateUser();
-        
+
 var output = result.Match(
     value => $"Result is a UserCreated: {value}",
     value => $"Result is a UserUpdated: {value}"
@@ -57,6 +57,29 @@ var output = result.Match(
 
 UserCreated userCreated = result.AsT1();
 Console.WriteLine($"Id: {userCreated.Id}, Name: {userCreated.Name}");
+
+//TryGetValue
+
+if (result.TryGetT1(out UserCreated userCreated)
+{
+    Console.WriteLine($"result is a UserCreated");
+}
+else
+{
+    Console.WriteLine($"result is something else!");
+}
+
+//Actionable
+
+result.When(
+    actUserCreated =>
+    {
+        DoSomething(actUserCreated);
+    },
+    actUserUpdated =>
+    {
+        DoSomethingElse(actUserUpdated);
+    });
 ```
 
 ## Contributing 👥

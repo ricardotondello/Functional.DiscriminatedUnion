@@ -227,4 +227,167 @@ public class OneResultTests
             return 55.6d;
         }
     }
+
+    [Fact]
+    public void TryGetT1_ShouldReturnTrueWhenIsT1()
+    {
+        var oneResultT1 = (OneResult<int>)6;
+
+        var result = oneResultT1.TryGetT1(out var t1);
+
+        result.Should().BeTrue();
+        t1.Should().Be(6);
+    }
+
+    [Fact]
+    public void TryGetT1_ShouldReturnFalseWhenIsNotT1()
+    {
+        var oneResultT1 = (OneResult<int, string>)"test";
+
+        var result = oneResultT1.TryGetT1(out var t1);
+
+        result.Should().BeFalse();
+        t1.Should().Be(default);
+    }
+
+    [Fact]
+    public void TryGetT2_ShouldReturnTrueWhenIsT2()
+    {
+        var oneResultT2 = (OneResult<int, string>)"test";
+
+        var result = oneResultT2.TryGetT2(out var t2);
+
+        result.Should().BeTrue();
+        t2.Should().Be("test");
+    }
+
+    [Fact]
+    public void TryGetT2_ShouldReturnFalseWhenIsNotT2()
+    {
+        var oneResultT2 = (OneResult<int, string>)1;
+
+        var result = oneResultT2.TryGetT2(out var t2);
+
+        result.Should().BeFalse();
+        t2.Should().Be(default);
+    }
+
+    [Fact]
+    public void TryGetT3_ShouldReturnTrueWhenIsT3()
+    {
+        var oneResult = (OneResult<int, string, bool>)true;
+
+        var result = oneResult.TryGetT3(out var t3);
+
+        result.Should().BeTrue();
+        t3.Should().BeTrue();
+    }
+
+    [Fact]
+    public void TryGetT3_ShouldReturnFalseWhenIsNotT3()
+    {
+        var oneResult = (OneResult<int, string, bool>)1;
+
+        var result = oneResult.TryGetT3(out var t3);
+
+        result.Should().BeFalse();
+        t3.Should().Be(default);
+    }
+
+    [Fact]
+    public void TryGetT4_ShouldReturnTrueWhenIsT4()
+    {
+        var oneResult = (OneResult<int, string, bool, double>)7.5d;
+
+        var result = oneResult.TryGetT4(out var t4);
+
+        result.Should().BeTrue();
+        t4.Should().Be(7.5d);
+    }
+
+    [Fact]
+    public void TryGetT4_ShouldReturnFalseWhenIsNotT4()
+    {
+        var oneResult = (OneResult<int, string, bool, double>)"test";
+
+        var result = oneResult.TryGetT4(out var t4);
+
+        result.Should().BeFalse();
+        t4.Should().Be(default);
+    }
+
+    [Fact]
+    public void When_ShouldExecuteActionWhenIsT1()
+    {
+        var oneResult = (OneResult<int>)1;
+
+        var value = 0;
+        oneResult.When(actT1 => { value = actT1; });
+
+        value.Should().Be(oneResult.AsT1());
+    }
+
+    [Fact]
+    public void When_ShouldExecuteActionWhenIsT2()
+    {
+        var oneResult = (OneResult<int, string>)"test";
+
+        int? valueT1 = null;
+        var valueT2 = string.Empty;
+        oneResult.When(actT1 => { valueT1 = actT1; }, actT2 => { valueT2 = actT2; });
+
+        valueT1.Should().BeNull();
+        valueT2.Should().Be(oneResult.AsT2());
+    }
+
+    [Fact]
+    public void When_ShouldExecuteActionWhenIsT3()
+    {
+        var oneResult = (OneResult<int, string, bool>)true;
+
+        int? valueT1 = null;
+        var valueT2 = string.Empty;
+        var valueT3 = false;
+        oneResult.When(actT1 => { valueT1 = actT1; }, actT2 => { valueT2 = actT2; }, actT3 => { valueT3 = actT3; });
+
+        valueT1.Should().BeNull();
+        valueT2.Should().Be(string.Empty);
+        valueT3.Should().Be(oneResult.AsT3());
+    }
+
+    [Fact]
+    public void When_ShouldExecuteActionWhenIsT4()
+    {
+        var oneResult = (OneResult<int, string, bool, double>)12.5d;
+
+        int? valueT1 = null;
+        var valueT2 = string.Empty;
+        var valueT3 = false;
+        var valueT4 = 0d;
+        oneResult.When(actT1 => { valueT1 = actT1; }, actT2 => { valueT2 = actT2; }, actT3 => { valueT3 = actT3; },
+            actT4 => { valueT4 = actT4; });
+
+        valueT1.Should().BeNull();
+        valueT2.Should().Be(string.Empty);
+        valueT3.Should().BeFalse();
+        valueT4.Should().Be(oneResult.AsT4());
+    }
+
+    [Fact]
+    public void When_ShouldExecuteActionOfT1WhenIsOneResultOfElements()
+    {
+        var oneResult = (OneResult<int, string, bool, double>)1;
+
+        int? valueT1 = null;
+        var valueT2 = string.Empty;
+        var valueT3 = false;
+        var valueT4 = 0d;
+        oneResult.When(actT1 => { valueT1 = actT1; }, actT2 => { valueT2 = actT2; }, actT3 => { valueT3 = actT3; },
+            actT4 => { valueT4 = actT4; });
+
+        valueT1.Should().Be(oneResult.AsT1());
+        valueT2.Should().Be(string.Empty);
+        valueT3.Should().BeFalse();
+        valueT4.Should().Be(0d);
+    }
 }
