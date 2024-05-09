@@ -201,7 +201,7 @@ public class OneResultTests
         // Act & Assert
         oneResultT1.AsT1().Should().Be(1);
         oneResultT2.AsT2().Should().Be("test");
-        oneResultT3.AsT3().Should().BeTrue();
+        oneResultT3.AsT3().Should().BeTrue(); 
         oneResultT4.AsT4().Should().Be(55.6d);
         Action actT4 = () => oneResultT3.AsT4();
         actT4.Should().Throw<InvalidOperationException>().WithMessage("Cannot cast value to T4");
