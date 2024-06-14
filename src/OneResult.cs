@@ -2,6 +2,7 @@
 
 namespace Functional.DiscriminatedUnion;
 
+
 public record OneResult<T1>
 {
     protected readonly object Value = null!;
@@ -50,6 +51,7 @@ public record OneResult<T1>
     }
 }
 
+
 public record OneResult<T1, T2> : OneResult<T1>
 {
     protected OneResult(byte index, object value) : base(index, value)
@@ -95,6 +97,7 @@ public record OneResult<T1, T2> : OneResult<T1>
         base.When(actT1);
     }
 }
+
 
 public record OneResult<T1, T2, T3> : OneResult<T1, T2>
 {
@@ -143,6 +146,7 @@ public record OneResult<T1, T2, T3> : OneResult<T1, T2>
         base.When(actT1, actT2);
     }
 }
+
 
 public record OneResult<T1, T2, T3, T4> : OneResult<T1, T2, T3>
 {
