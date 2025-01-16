@@ -15,8 +15,8 @@ public class OneResultTests
         var actualResult = oneResult.AsT1();
 
         // Assert
-        expectedResult.Should().Be(actualResult);
-        oneResult.IsT1.Should().BeTrue();
+        Assert.Equal(expectedResult, actualResult);
+        Assert.True(oneResult.IsT1);
     }
 
     [Fact]
@@ -26,13 +26,12 @@ public class OneResultTests
         var oneResult = Create();
 
         // Act & Assert
-        oneResult.AsT2().Should().Be("test");
-        oneResult.IsT2.Should().BeTrue();
-        oneResult.IsT1.Should().BeFalse();
-        Action act = () => oneResult.AsT1();
-
-        act.Should().Throw<InvalidOperationException>().WithMessage("Cannot cast value to T1");
-        oneResult.Match(fnT1 => fnT1.ToString(), fnT2 => fnT2).Should().Be("test");
+        Assert.Equal("test", oneResult.AsT2());
+        Assert.True(oneResult.IsT2);
+        Assert.False(oneResult.IsT1);
+        var ex = Assert.Throws<InvalidOperationException>(() => oneResult.AsT1());
+        Assert.Equal("Cannot cast value to T1", ex.Message);
+        Assert.Equal("test", oneResult.Match(fnT1 => fnT1.ToString(), fnT2 => fnT2));
         return;
 
         OneResult<int, string> Create()
@@ -48,13 +47,13 @@ public class OneResultTests
         var oneResult = Create();
 
         // Act & Assert
-        oneResult.AsT1().Should().Be(34);
-        oneResult.IsT2.Should().BeFalse();
-        oneResult.IsT1.Should().BeTrue();
-        Action act = () => oneResult.AsT2();
+        Assert.Equal(34, oneResult.AsT1());
+        Assert.False(oneResult.IsT2);
+        Assert.True(oneResult.IsT1);
+        var ex = Assert.Throws<InvalidOperationException>(() => oneResult.AsT2());
 
-        act.Should().Throw<InvalidOperationException>().WithMessage("Cannot cast value to T2");
-        oneResult.Match(fnT1 => fnT1.ToString(), fnT2 => fnT2).Should().Be("34");
+        Assert.Equal("Cannot cast value to T2", ex.Message);
+        Assert.Equal("34", oneResult.Match(fnT1 => fnT1.ToString(), fnT2 => fnT2));
         return;
 
         OneResult<int, string> Create()
@@ -70,21 +69,21 @@ public class OneResultTests
         var oneResult = Create();
 
         // Act & Assert
-        oneResult.AsT3().Should().BeTrue();
-        oneResult.IsT3.Should().BeTrue();
-        oneResult.IsT2.Should().BeFalse();
-        oneResult.IsT1.Should().BeFalse();
+        Assert.True(oneResult.AsT3());
+        Assert.True(oneResult.IsT3);
+        Assert.False(oneResult.IsT2);
+        Assert.False(oneResult.IsT1);
 
-        Action actT1 = () => oneResult.AsT1();
-        Action actT2 = () => oneResult.AsT2();
+        var ex1 = Assert.Throws<InvalidOperationException>(() => oneResult.AsT1());
+        var ex2 = Assert.Throws<InvalidOperationException>(() => oneResult.AsT2());
 
-        actT1.Should().Throw<InvalidOperationException>().WithMessage("Cannot cast value to T1");
-        actT2.Should().Throw<InvalidOperationException>().WithMessage("Cannot cast value to T2");
-        oneResult.Match(fnT1 => fnT1.ToString(), fnT2 => fnT2, fnT3 => fnT3.ToString()).Should().Be("True");
+        Assert.Equal("Cannot cast value to T1", ex1.Message);
+        Assert.Equal("Cannot cast value to T2", ex2.Message);
+        Assert.Equal("True", oneResult.Match(fnT1 => fnT1.ToString(), fnT2 => fnT2, fnT3 => fnT3.ToString()));
 
-        Action matchWrong = () => oneResult.Match(fnT1 => fnT1.ToString(), fnT2 => fnT2);
-        matchWrong.Should().Throw<InvalidOperationException>()
-            .WithMessage("Could not match Func, CurrentIndex with value 3 is out of boundaries");
+        var matchWrong =
+            Assert.Throws<InvalidOperationException>(() => oneResult.Match(fnT1 => fnT1.ToString(), fnT2 => fnT2));
+        Assert.Equal("Could not match Func, CurrentIndex with value 3 is out of boundaries", matchWrong.Message);
         return;
 
         OneResult<int, string, bool> Create()
@@ -101,8 +100,8 @@ public class OneResultTests
         var oneResultT2 = CreateT2();
 
         // Act & Assert
-        oneResultT1.AsT1().Should().Be(1);
-        oneResultT2.AsT2().Should().Be("test");
+        Assert.Equal(1, oneResultT1.AsT1());
+        Assert.Equal("test", oneResultT2.AsT2());
         return;
 
         OneResult<int, string, bool> CreateT1()
@@ -123,33 +122,34 @@ public class OneResultTests
         var oneResult = Create();
 
         // Act & Assert
-        oneResult.AsT4().Should().Be(55.5d);
-        oneResult.IsT4.Should().BeTrue();
-        oneResult.IsT3.Should().BeFalse();
-        oneResult.IsT2.Should().BeFalse();
-        oneResult.IsT1.Should().BeFalse();
+        Assert.Equal(55.5d, oneResult.AsT4());
+        Assert.True(oneResult.IsT4);
+        Assert.False(oneResult.IsT3);
+        Assert.False(oneResult.IsT2);
+        Assert.False(oneResult.IsT1);
 
-        Action actT1 = () => oneResult.AsT1();
-        Action actT2 = () => oneResult.AsT2();
-        Action actT3 = () => oneResult.AsT3();
+        var actT1 = Assert.Throws<InvalidOperationException>(() => oneResult.AsT1());
+        var actT2 = Assert.Throws<InvalidOperationException>(() => oneResult.AsT2());
+        var actT3 = Assert.Throws<InvalidOperationException>(() => oneResult.AsT3());
 
-        actT1.Should().Throw<InvalidOperationException>().WithMessage("Cannot cast value to T1");
-        actT2.Should().Throw<InvalidOperationException>().WithMessage("Cannot cast value to T2");
-        actT3.Should().Throw<InvalidOperationException>().WithMessage("Cannot cast value to T3");
-        oneResult.Match(fnT1 => fnT1.ToString(), fnT2 => fnT2, fnT3 => fnT3.ToString(),
-            fnt4 => fnt4.ToString(CultureInfo.InvariantCulture)).Should().Be("55.5");
+        Assert.Equal("Cannot cast value to T1", actT1.Message);
+        Assert.Equal("Cannot cast value to T2", actT2.Message);
+        Assert.Equal("Cannot cast value to T3", actT3.Message);
+        Assert.Equal("55.5",
+            oneResult.Match(fnT1 => fnT1.ToString(), fnT2 => fnT2, fnT3 => fnT3.ToString(),
+                fnt4 => fnt4.ToString(CultureInfo.InvariantCulture)));
 
-        Action matchWrongT1 = () => oneResult.Match(fnT1 => fnT1.ToString());
-        Action matchWrongT2 = () => oneResult.Match(fnT1 => fnT1.ToString(), fnT2 => fnT2);
-        Action matchWrongT3 = () => oneResult.Match(fnT1 => fnT1.ToString(), fnT2 => fnT2, fnT3 => fnT3.ToString());
-        matchWrongT1.Should().Throw<InvalidOperationException>()
-            .WithMessage("Could not match Func, CurrentIndex with value 4 is out of boundaries");
-        matchWrongT2.Should().Throw<InvalidOperationException>()
-            .WithMessage("Could not match Func, CurrentIndex with value 4 is out of boundaries");
-        matchWrongT3.Should().Throw<InvalidOperationException>()
-            .WithMessage("Could not match Func, CurrentIndex with value 4 is out of boundaries");
-        ((OneResult<int, string, bool, double>)1).Match(fnT1 => fnT1.ToString(), fnT2 => fnT2, fnT3 => fnT3.ToString(),
-            fnt4 => fnt4.ToString(CultureInfo.InvariantCulture)).Should().Be("1");
+        var matchWrongT1 = Assert.Throws<InvalidOperationException>(() => oneResult.Match(fnT1 => fnT1.ToString()));
+        var matchWrongT2 =
+            Assert.Throws<InvalidOperationException>(() => oneResult.Match(fnT1 => fnT1.ToString(), fnT2 => fnT2));
+        var matchWrongT3 = Assert.Throws<InvalidOperationException>(() =>
+            oneResult.Match(fnT1 => fnT1.ToString(), fnT2 => fnT2, fnT3 => fnT3.ToString()));
+        Assert.Equal("Could not match Func, CurrentIndex with value 4 is out of boundaries", matchWrongT1.Message);
+        Assert.Equal("Could not match Func, CurrentIndex with value 4 is out of boundaries", matchWrongT2.Message);
+        Assert.Equal("Could not match Func, CurrentIndex with value 4 is out of boundaries", matchWrongT3.Message);
+        Assert.Equal("1",
+            ((OneResult<int, string, bool, double>)1).Match(fnT1 => fnT1.ToString(), fnT2 => fnT2,
+                fnT3 => fnT3.ToString(), fnt4 => fnt4.ToString(CultureInfo.InvariantCulture)));
         return;
 
         OneResult<int, string, bool, double> Create()
@@ -167,9 +167,9 @@ public class OneResultTests
         var oneResultT3 = CreateT3();
 
         // Act & Assert
-        oneResultT1.AsT1().Should().Be(1);
-        oneResultT2.AsT2().Should().Be("test");
-        oneResultT3.AsT3().Should().BeTrue();
+        Assert.Equal(1, oneResultT1.AsT1());
+        Assert.Equal("test", oneResultT2.AsT2());
+        Assert.True(oneResultT3.AsT3());
 
         return;
 
@@ -199,12 +199,12 @@ public class OneResultTests
         var oneResultT4 = CreateT4();
 
         // Act & Assert
-        oneResultT1.AsT1().Should().Be(1);
-        oneResultT2.AsT2().Should().Be("test");
-        oneResultT3.AsT3().Should().BeTrue();
-        oneResultT4.AsT4().Should().Be(55.6d);
-        Action actT4 = () => oneResultT3.AsT4();
-        actT4.Should().Throw<InvalidOperationException>().WithMessage("Cannot cast value to T4");
+        Assert.Equal(1, oneResultT1.AsT1());
+        Assert.Equal("test", oneResultT2.AsT2());
+        Assert.True(oneResultT3.AsT3());
+        Assert.Equal(55.6d, oneResultT4.AsT4());
+        var actT4 = Assert.Throws<InvalidOperationException>(() => oneResultT3.AsT4());
+        Assert.Equal("Cannot cast value to T4", actT4.Message);
         return;
 
         OneResult<int, string, bool, double> CreateT1()
@@ -235,8 +235,8 @@ public class OneResultTests
 
         var result = oneResultT1.TryGetT1(out var t1);
 
-        result.Should().BeTrue();
-        t1.Should().Be(6);
+        Assert.True(result);
+        Assert.Equal(6, t1);
     }
 
     [Fact]
@@ -246,8 +246,8 @@ public class OneResultTests
 
         var result = oneResultT1.TryGetT1(out var t1);
 
-        result.Should().BeFalse();
-        t1.Should().Be(default);
+        Assert.False(result);
+        Assert.Equal(0, t1);
     }
 
     [Fact]
@@ -257,8 +257,8 @@ public class OneResultTests
 
         var result = oneResultT2.TryGetT2(out var t2);
 
-        result.Should().BeTrue();
-        t2.Should().Be("test");
+        Assert.True(result);
+        Assert.Equal("test", t2);
     }
 
     [Fact]
@@ -268,8 +268,8 @@ public class OneResultTests
 
         var result = oneResultT2.TryGetT2(out var t2);
 
-        result.Should().BeFalse();
-        t2.Should().Be(default);
+        Assert.False(result);
+        Assert.Null(t2);
     }
 
     [Fact]
@@ -279,8 +279,8 @@ public class OneResultTests
 
         var result = oneResult.TryGetT3(out var t3);
 
-        result.Should().BeTrue();
-        t3.Should().BeTrue();
+        Assert.True(result);
+        Assert.True(t3);
     }
 
     [Fact]
@@ -290,8 +290,8 @@ public class OneResultTests
 
         var result = oneResult.TryGetT3(out var t3);
 
-        result.Should().BeFalse();
-        t3.Should().Be(default);
+        Assert.False(result);
+        Assert.False(t3);
     }
 
     [Fact]
@@ -301,8 +301,8 @@ public class OneResultTests
 
         var result = oneResult.TryGetT4(out var t4);
 
-        result.Should().BeTrue();
-        t4.Should().Be(7.5d);
+        Assert.True(result);
+        Assert.Equal(7.5d, t4);
     }
 
     [Fact]
@@ -312,8 +312,8 @@ public class OneResultTests
 
         var result = oneResult.TryGetT4(out var t4);
 
-        result.Should().BeFalse();
-        t4.Should().Be(default);
+        Assert.False(result);
+        Assert.Equal(0, t4);
     }
 
     [Fact]
@@ -324,7 +324,7 @@ public class OneResultTests
         var value = 0;
         oneResult.When(actT1 => { value = actT1; });
 
-        value.Should().Be(oneResult.AsT1());
+        Assert.Equal(oneResult.AsT1(), value);
     }
 
     [Fact]
@@ -336,8 +336,8 @@ public class OneResultTests
         var valueT2 = string.Empty;
         oneResult.When(actT1 => { valueT1 = actT1; }, actT2 => { valueT2 = actT2; });
 
-        valueT1.Should().BeNull();
-        valueT2.Should().Be(oneResult.AsT2());
+        Assert.Null(valueT1);
+        Assert.Equal(oneResult.AsT2(), valueT2);
     }
 
     [Fact]
@@ -350,9 +350,9 @@ public class OneResultTests
         var valueT3 = false;
         oneResult.When(actT1 => { valueT1 = actT1; }, actT2 => { valueT2 = actT2; }, actT3 => { valueT3 = actT3; });
 
-        valueT1.Should().BeNull();
-        valueT2.Should().Be(string.Empty);
-        valueT3.Should().Be(oneResult.AsT3());
+        Assert.Null(valueT1);
+        Assert.Equal(string.Empty, valueT2);
+        Assert.Equal(oneResult.AsT3(), valueT3);
     }
 
     [Fact]
@@ -367,10 +367,10 @@ public class OneResultTests
         oneResult.When(actT1 => { valueT1 = actT1; }, actT2 => { valueT2 = actT2; }, actT3 => { valueT3 = actT3; },
             actT4 => { valueT4 = actT4; });
 
-        valueT1.Should().BeNull();
-        valueT2.Should().Be(string.Empty);
-        valueT3.Should().BeFalse();
-        valueT4.Should().Be(oneResult.AsT4());
+        Assert.Null(valueT1);
+        Assert.Equal(string.Empty, valueT2);
+        Assert.False(valueT3);
+        Assert.Equal(oneResult.AsT4(), valueT4);
     }
 
     [Fact]
@@ -385,9 +385,9 @@ public class OneResultTests
         oneResult.When(actT1 => { valueT1 = actT1; }, actT2 => { valueT2 = actT2; }, actT3 => { valueT3 = actT3; },
             actT4 => { valueT4 = actT4; });
 
-        valueT1.Should().Be(oneResult.AsT1());
-        valueT2.Should().Be(string.Empty);
-        valueT3.Should().BeFalse();
-        valueT4.Should().Be(0d);
+        Assert.Equal(oneResult.AsT1(), valueT1);
+        Assert.Equal(string.Empty, valueT2);
+        Assert.False(valueT3);
+        Assert.Equal(0d, valueT4);
     }
 }
