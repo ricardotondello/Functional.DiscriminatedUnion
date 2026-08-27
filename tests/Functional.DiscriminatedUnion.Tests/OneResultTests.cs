@@ -328,6 +328,18 @@ public class OneResultTests
     }
 
     [Fact]
+    public void When_ShouldNotExecuteActionWhenIsNotT1()
+    {
+        var oneResult = (OneResult<int, string>)"test";
+
+        var invoked = false;
+        oneResult.When(actT1 => { invoked = true; });
+
+        Assert.False(invoked);
+        Assert.False(oneResult.IsT1);
+    }
+
+    [Fact]
     public void When_ShouldExecuteActionWhenIsT2()
     {
         var oneResult = (OneResult<int, string>)"test";
